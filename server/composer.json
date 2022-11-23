@@ -1,0 +1,19 @@
+{
+    "name": "dtkvictor/webchat",
+    "description": "websocker server for client connection",
+    "type": "project",
+    "require": {
+        "cboden/ratchet": "^0.4.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dtk\\Webchat\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Victor Lucas",
+            "email": "dtkvictor32@gmail.com"
+        }
+    ]
+}
