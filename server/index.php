@@ -6,7 +6,7 @@ use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
 use Dtk\Webchat\Lib\Chat;
 
-$server = IoServer::factory(
+$websocket = IoServer::factory(
     new HttpServer(
         new WsServer(
             new Chat()
@@ -14,4 +14,4 @@ $server = IoServer::factory(
     ),8888
 );
 
-$server->run();
+$websocket->run();

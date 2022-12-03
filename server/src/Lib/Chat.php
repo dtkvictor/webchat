@@ -1,40 +1,42 @@
 <?php
+
 namespace Dtk\Webchat\Lib;
+
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use Dtk\Webchat\Controller\MessageController;
 
 class Chat implements MessageComponentInterface 
-{
-    protected $clients;
+{                
+    private MessageController $message;
 
     public function __construct()
     {
-        $this->clients = new \SplObjectStorage;
+        $this->message = new MessageController();     
     }
 
     public function onOpen(ConnectionInterface $conn) 
-    {
-        $this->clients->attach($conn);
-        print_r($conn);
-    }
+    {                                    
+        $conn->send($this->message->defaultPayload('success',[
+            'id'=>$conn->resourceId
+        ]));
+    }   
 
-    public function onMessage(ConnectionInterface $from, $msg) 
+    public function onMessage(ConnectionInterface $conn, $msg) 
     {
-        //debug
-        foreach ($this->clients as $client) {
-            if ($from !== $client) {            
-                $client->send($msg);
-            }
-        }
+        $this->message->set($msg);
+        $this->message->from($conn);            
+        $this->message->run();        
     }
 
     public function onClose(ConnectionInterface $conn) 
     {
-        $this->clients->detach($conn);
+        $this->message->unconnected($conn->resourceId);
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) 
     {
+        $this->message->internalError($e->getMessage());
         echo $e->getMessage();
         $conn->close();
     }
