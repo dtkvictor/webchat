@@ -14,7 +14,7 @@ class MessageValidation
     private array $supportedType = [        
         'text' => ['from', 'to', 'value'],
         'file' => ['from', 'to', 'type', 'value'],                                                
-        'multipart' => ['from', 'to', 'type', 'amount','current','value'],                                                
+        'multipart' => ['from', 'to', 'type', 'amount','current','id','value'],                                                
         'newConnection' => ['name', 'image'],
     ];               
 
