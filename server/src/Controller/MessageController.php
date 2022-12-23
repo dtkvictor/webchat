@@ -61,50 +61,59 @@ class MessageController {
         $this->messageValidation->set($this->message);        
         $this->messageValidation->run();
         
-        if(!$this->messageValidation->isValid()){
+        if(!$this->messageValidation->isValid()){            
             $this->from->send($this->defaultPayload('error',[
-                'status' => 400,
-                'errors' => $this->messageValidation->feedback()
+                'status' => 1007,
+                'error' => $this->messageValidation->feedback()
             ]));
             return;
         }            
                 
-        if($this->message['type'] === 'newConnection'){
-            $this->newConnection();            
-        } else{
-            $this->message();
-        }        
+        switch($this->message['type']) {
+            case 'connection':
+                $this->connection();
+                break;
+            case 'disconnect':
+                $this->unconnected($this->from->resourceId);
+                break;
+            default:
+                $this->message();
+                break;
+        }          
     }
-
-    /**
-     * Function names correspond to supported types
-     * client message
-    */
+    
     private function message():void
     {
         $user = $this->users->find($this->message['data']['to']);
         $this->message['data']['value'] = 
             filter_var($this->message['data']['value'], FILTER_SANITIZE_SPECIAL_CHARS);            
-        if(!empty($user)){            
+        if(isset($user->conn)) {            
             $user->conn->send(json_encode($this->message));
         }        
     }
 
-    private function newConnection():void
+    private function connection():void
     {
+        if($this->users->exists($this->from->resourceId)) return;
+
         $newUser = [            
             'id' => $this->from->resourceId,
             'name' => $this->message['data']['name'],
-            'image' => $this->message['data']['image']
+            'image' => $this->message['data']['image'] ? $this->message['data']['image'] : ""
         ];        
+        
         $users = [];                
         
         foreach($this->users->get() as $user) {              
             $users[] = $user->data;
             $user->conn->send($this->defaultPayload('connected', $newUser));            
         }
-        
-        $this->from->send($this->defaultPayload('users', $users));
+
+        $this->from->send($this->defaultPayload('success', [
+            'id' => $this->from->resourceId,
+            'users' => $users            
+        ]));        
+
         $this->users->add($this->from, $newUser['id'], $newUser['name'], $newUser['image']);        
     }
 
@@ -125,7 +134,7 @@ class MessageController {
     {
         foreach($this->users->get() as $user) {
             $user->conn->send($this->defaultPayload('error', [
-                'status' => 500,
+                'status' => 1011,
                 'errors' => $message
             ]));            
         }

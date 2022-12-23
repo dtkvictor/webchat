@@ -21,6 +21,10 @@ class Users
         return new stdClass;
     }     
 
+    public function exists(int $resourceId):bool
+    {
+        return isset($this->users[$resourceId]);
+    }
 
     public function add(object $conn, int $resourceId, string $name, string $image):void
     {

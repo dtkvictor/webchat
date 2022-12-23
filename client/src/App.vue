@@ -1,11 +1,56 @@
-<template>
-  <main>    
-    <router-view></router-view>
-  </main>
+<template>        
+    <router-view/>          
 </template>
-<script>
-  export default {
-    name: 'App',
-    components: {}
+<script>      
+import { mapActions, mapMutations } from 'vuex'
+  export default {            
+    name: 'App',       
+    created() {
+        this.$store.state.socket.onmessage = (json) => {          
+          const message = JSON.parse(json.data)       
+            console.log(message)                                    
+          const action = this[message.type];                  
+          if(action) action(message.data)                                    
+        }                                
+
+        this.$store.state.socket.onerror = (error) => {
+          this.error(error)
+        }
+    },               
+    methods: {
+      ...mapActions({
+        connected: 'addUser',          
+      }),
+
+      ...mapMutations({                                               
+        addMessage: 'addMessage',                  
+        unconnected: 'removeUser',               
+      }),               
+
+      async message(message){
+        if(message.format != 'text') {
+          const base64Response = await fetch(message.value)
+          const blob = await base64Response.blob()
+          message.value = window.URL.createObjectURL(blob)
+        }        
+        this.addMessage(message)
+      },         
+
+      success(message) {
+        message.users.forEach(user => {
+          this.connected(user)
+        });        
+        this.$store.state.id = message.id                
+        this.$router.push({name:'Home'})              
+      },      
+
+      error(message) {          
+        this.$store.state.socket.close()
+        this.$router.push({
+          name:'Error', 
+          params: {status: message?.status, error: message?.error}
+        })
+      }
+    },
   }
 </script>

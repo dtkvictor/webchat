@@ -6,5 +6,14 @@ import router from './router'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'material-icons/iconfont/material-icons.css'
+import '../src/assets/css/style.css'
 
-createApp(App).use(store).use(router).mount('#app')
+const Vue = createApp(App);
+Vue.directive('scrollTo', {
+    updated(el) {        
+        console.log(el)        
+        el.scrollTop = el.scrollHeight        
+    }
+})
+
+Vue.use(store).use(router).mount('#app')

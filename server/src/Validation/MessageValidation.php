@@ -4,18 +4,17 @@ namespace Dtk\Webchat\Validation;
 
 class MessageValidation
 {
-    private array $feedback;
+    private string $feedback;
     private array $payload;        
     
     private array $payloadStructure = [
         'type', 'data'
     ];
     
-    private array $supportedType = [        
-        'text' => ['from', 'to', 'value'],
-        'file' => ['from', 'to', 'type', 'value'],                                                
-        'multipart' => ['from', 'to', 'type', 'amount','current','id','value'],                                                
-        'newConnection' => ['name', 'image'],
+    private array $supportedType = [                                                                
+        'message' => ['from', 'to', 'format', 'value', 'hour'],                                                
+        'connection' => ['name', 'image'],
+        'disconnect' => null
     ];               
 
     public function set(array $payload):void
@@ -32,13 +31,13 @@ class MessageValidation
          * Must follow this order
         */        
         if (!$this->isValidPayload()) {
-            $this->feedback['payload'] = 'The structure does not match';       
+            $this->feedback = 'The structure does not match';       
                              
         } else if (!$this->isValidMessageType()) {
-            $this->feedback['payload'] = 'Undefined or invalid type';
+            $this->feedback = 'Undefined or invalid type';
             
         } else if (!$this->isValidMessageData()) {
-            $this->feedback['payload'] = 'Undefined or invalid data';
+            $this->feedback = 'Undefined or invalid data';
         }                       
     }
 
@@ -57,9 +56,11 @@ class MessageValidation
     /** 
      * Return the feedback list
     */
-    public function feedback():array
+    public function feedback():string
     {
-        return $this->feedback;
+        $error = $this->feedback;
+        $this->feedback = "";
+        return $error;
     }
 
     private function isValidPayload():bool
@@ -75,7 +76,7 @@ class MessageValidation
     private function isValidMessageType():bool
     {        
         $type = $this->payload['type'];                
-        print_r($type);                
+
         if(empty($type) || !isset($this->supportedType[$type])) {
             return false;
         }
@@ -83,13 +84,14 @@ class MessageValidation
     }
 
     private function isValidMessageData():bool
-    {
+    {        
         $type = $this->payload['type'];                                
-        $data = $this->payload['data'];                                
-        foreach($this->supportedType[$type] as $key) {
-            if(!isset($data[$key]) || empty($data[$key])) {
-                return false;
-            }
+        $data = $this->payload['data'];           
+
+        foreach($this->supportedType[$type] as $key) {            
+            if(!array_key_exists($key, $data)){
+                return false;            
+            }            
         }        
         return true;
     }

@@ -15,12 +15,7 @@ class Chat implements MessageComponentInterface
         $this->message = new MessageController();     
     }
 
-    public function onOpen(ConnectionInterface $conn) 
-    {                                    
-        $conn->send($this->message->defaultPayload('success',[
-            'id'=>$conn->resourceId
-        ]));
-    }   
+    public function onOpen(ConnectionInterface $conn) {}   
 
     public function onMessage(ConnectionInterface $conn, $msg) 
     {
