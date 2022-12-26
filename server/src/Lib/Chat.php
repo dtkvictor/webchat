@@ -15,7 +15,11 @@ class Chat implements MessageComponentInterface
         $this->message = new MessageController();     
     }
 
-    public function onOpen(ConnectionInterface $conn) {}   
+    public function onOpen(ConnectionInterface $conn) {
+        $conn->send($this->message->defaultPayload('success', [
+            'message' => 'successful connection'
+        ]));
+    }   
 
     public function onMessage(ConnectionInterface $conn, $msg) 
     {
@@ -31,9 +35,12 @@ class Chat implements MessageComponentInterface
 
     public function onError(ConnectionInterface $conn, \Exception $e) 
     {
-        $this->message->internalError($e->getMessage());
-        echo $e->getMessage();
+        $conn->send($this->message->defaultPayload('error', [
+            'code' => $e->getCode(),
+            'message' => $e->getMessage()
+        ]));                    
         $conn->close();
+        echo $e->getMessage().'\n';
     }
 
 }
