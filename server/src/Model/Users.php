@@ -26,11 +26,12 @@ class Users
         return isset($this->users[$resourceId]);
     }
 
-    public function add(object $conn, int $resourceId, string $name, string $image):void
+    public function add(object $conn, int $resourceId, string $name, string $image = null):void
     {
         if(!isset($this->users[$resourceId])){            
             $this->users[$resourceId] = new stdClass;
             $this->users[$resourceId]->conn = $conn;
+            $this->users[$resourceId]->lastMessageTime = time();
             $this->users[$resourceId]->data = [                
                 'id' => $resourceId,
                 'name' => $name,
@@ -38,6 +39,13 @@ class Users
             ];             
         }
     }    
+
+    public function updateLastMessageTime(int $resourceId):void 
+    {
+        if($this->exists($resourceId)) {
+            $this->users[$resourceId]->lastMessageTime = time();
+        }
+    }
 
     public function remove(int $resourceId):void
     {
