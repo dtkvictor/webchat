@@ -8,7 +8,7 @@ const InternalError = () => import('@/app/view/Error.vue')
 const routes = [
     { path:'/', name:'Home', component:Home },
     { path:'/cadastrar', name:'Register', component:Register },
-    { path:'/error/:status?/:error?', name:'Error', component:InternalError },
+    { path:'/error', name:'Error', component:InternalError },
 ]
 
 const router = createRouter({

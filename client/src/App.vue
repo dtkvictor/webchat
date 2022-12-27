@@ -13,9 +13,12 @@ import { mapActions, mapMutations } from 'vuex'
           if(action) action(message.data)                                    
         }                                
 
-        this.$store.state.socket.onerror = (error) => {
-          this.error(error)
+        this.$store.state.socket.onclose = () => {
+          this.$router.push({
+            name:'Error'            
+          })
         }
+
     },               
     methods: {
       ...mapActions({
@@ -36,7 +39,7 @@ import { mapActions, mapMutations } from 'vuex'
         this.addMessage(message)
       },         
 
-      success(message) {
+      registered(message) {
         message.users.forEach(user => {
           this.connected(user)
         });        
@@ -44,12 +47,9 @@ import { mapActions, mapMutations } from 'vuex'
         this.$router.push({name:'Home'})              
       },      
 
-      error(message) {          
+      error(error) {          
         this.$store.state.socket.close()
-        this.$router.push({
-          name:'Error', 
-          params: {status: message?.status, error: message?.error}
-        })
+        console.error(error)        
       }
     },
   }

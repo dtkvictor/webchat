@@ -32,7 +32,7 @@
                 <label for="inputFile" class="material-icons fs-1 pointer" translate="no">attach_file</label>                                
                 <input class="d-none" id="inputFile" type="file" accept="image/*, audio/*, video/*" @change="selectFile($event)">                
             </div>            
-            <button :class="[css.btn, 'border-start-0 rounded-end']" @click="sendText">
+            <button :class="[css.btn, 'border-start-0 rounded-end']" @click="sendText" id="btnSend">
                 <span class="material-icons fs-1" translate="no">send</span>
             </button>            
         </div>
