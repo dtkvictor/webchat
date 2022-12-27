@@ -16,7 +16,7 @@ class MessageController {
     private Users $users;        
 
     private object $from;
-    private array $message = [];                
+    private array $message;                
 
     public function __construct()
     {
@@ -25,7 +25,7 @@ class MessageController {
     }            
     
     public function from(object $user):void
-    {
+    {             
         $this->from = $user;
     }
 
@@ -38,7 +38,7 @@ class MessageController {
     }
 
     public function set($message):void
-    {
+    {        
         $message = json_decode($message, true);
         if(!empty($message)){            
             $this->message = $message;
@@ -61,29 +61,29 @@ class MessageController {
         $this->messageValidation->set($this->message);        
         $this->messageValidation->run();
         
-        if(!$this->messageValidation->isValid()){            
-            $this->from->send($this->defaultPayload('error',[
-                'status' => 1007,
-                'error' => $this->messageValidation->feedback()
-            ]));
-            return;
-        }            
+        if(!$this->messageValidation->isValid()) {          
+            throw new Exception($this->messageValidation->feedback(), 1007);                                    
+        }                                                          
                 
         switch($this->message['type']) {
             case 'connection':
                 $this->connection();
                 break;
-            case 'disconnect':
+            case 'disconnect':                                
                 $this->unconnected($this->from->resourceId);
                 break;
-            default:
+            case 'message':
+                $this->checkMessageOrigin();
+                $this->checkSpam();
                 $this->message();
                 break;
         }          
-    }
+        
+        $this->message = [];
+    }    
     
     private function message():void
-    {
+    {            
         $user = $this->users->find($this->message['data']['to']);
         $this->message['data']['value'] = 
             filter_var($this->message['data']['value'], FILTER_SANITIZE_SPECIAL_CHARS);            
@@ -93,28 +93,28 @@ class MessageController {
     }
 
     private function connection():void
-    {
-        if($this->users->exists($this->from->resourceId)) return;
+    {   
+        $listUsers = array();
 
-        $newUser = [            
-            'id' => $this->from->resourceId,
-            'name' => $this->message['data']['name'],
-            'image' => $this->message['data']['image'] ? $this->message['data']['image'] : ""
-        ];        
-        
-        $users = [];                
-        
-        foreach($this->users->get() as $user) {              
-            $users[] = $user->data;
-            $user->conn->send($this->defaultPayload('connected', $newUser));            
+        $newUser = $this->users->add(
+            $this->from,            
+            $this->message['data']['name'],
+            $this->message['data']['image']
+        );           
+
+        if(empty($newUser)) throw new Exception('Failed to register user', 1007);                                                            
+
+        foreach($this->users->get() as $user) {                    
+            if($user->data['id'] !== $newUser['id']) {
+                $listUsers[] = $user->data;
+                $user->conn->send($this->defaultPayload('connected', $newUser));            
+            }               
         }
 
-        $this->from->send($this->defaultPayload('success', [
+        $this->from->send($this->defaultPayload('registered', [
             'id' => $this->from->resourceId,
-            'users' => $users            
-        ]));        
-
-        $this->users->add($this->from, $newUser['id'], $newUser['name'], $newUser['image']);        
+            'users' => $listUsers            
+        ]));                       
     }
 
     /**
@@ -124,21 +124,41 @@ class MessageController {
 
     public function unconnected(int $userId):void
     {
-        $this->users->remove($userId);
-        foreach($this->users->get() as $user) {
-            $user->conn->send($this->defaultPayload('unconnected', ['id'=>$userId]));            
-        }
+        if($this->users->exists($userId)) {
+            $this->users->remove($userId);
+            foreach($this->users->get() as $user) {
+                $user->conn->send($this->defaultPayload('unconnected', ['id'=>$userId]));            
+            }
+        }        
+    }    
+
+    private function checkMessageOrigin():void
+    {        
+        if (
+            (!$this->users->exists($this->from->resourceId)) ||
+            ($this->from->resourceId !== $this->message['data']['from'])
+        ) {            
+            throw new Exception('user integrity violation', 1);                        
+        }                 
     }
 
-    public function internalError(string $message):void
-    {
-        foreach($this->users->get() as $user) {
-            $user->conn->send($this->defaultPayload('error', [
-                'status' => 1011,
-                'errors' => $message
-            ]));            
-        }
+    private function checkSpam():void
+    {                
+        $user = $this->users->find($this->from->resourceId);
+        $maxMessagePerSecond = 10;
+        $messageInterval = $user->lastMessageTime + 60;
+        $currentTime = time();
+
+        if($messageInterval <= $currentTime && $user->messagesPerSecond >= $maxMessagePerSecond) {                
+            throw new Exception('many messages in a short period of time', 1);    
+
+        }else if($messageInterval >= $currentTime) {
+            $this->users->updateLastMessageTime($user->data['id']);    
+            $this->users->resetMessagesPerSecond($user->data['id']);
+
+        }else{
+            $this->users->incrementMessagesPerSecond($user->data['id']);
+        }            
     }
-
-
+    
 }
