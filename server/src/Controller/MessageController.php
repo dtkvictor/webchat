@@ -138,7 +138,7 @@ class MessageController {
             (!$this->users->exists($this->from->resourceId)) ||
             ($this->from->resourceId !== $this->message['data']['from'])
         ) {            
-            throw new Exception('user integrity violation', 1);                        
+            throw new Exception('User integrity violation', 0000);                        
         }                 
     }
 
@@ -150,7 +150,7 @@ class MessageController {
         $currentTime = time();
 
         if($messageInterval <= $currentTime && $user->messagesPerSecond >= $maxMessagePerSecond) {                
-            throw new Exception('many messages in a short period of time', 1);    
+            throw new Exception('Many messages in a short period of time', 1013);    
 
         }else if($messageInterval >= $currentTime) {
             $this->users->updateLastMessageTime($user->data['id']);    

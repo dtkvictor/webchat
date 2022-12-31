@@ -12,10 +12,12 @@ class MessageValidation
     ];
     
     private array $supportedType = [                                                                
-        'message' => ['from', 'to', 'format', 'value', 'hour'],                                                
+        'message' => ['id', 'from', 'to', 'format', 'value', 'hour'],         
+        'edit' => ['id', 'from', 'to', 'value'],         
+        'delete' => ['id', 'from', 'to'],         
         'connection' => ['name', 'image'],
         'disconnect' => null
-    ];               
+    ];                   
 
     public function set(array $payload):void
     {                    
@@ -88,8 +90,8 @@ class MessageValidation
         $type = $this->payload['type'];                                
         $data = $this->payload['data'];           
 
-        foreach($this->supportedType[$type] as $key) {            
-            if(!array_key_exists($key, $data)){
+        foreach($this->supportedType[$type] as $key) {                        
+            if(!array_key_exists($key, $data)) {
                 return false;            
             }            
         }        
