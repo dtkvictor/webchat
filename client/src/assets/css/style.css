@@ -48,6 +48,7 @@ body {
   background-color: white;
   padding: 0.3rem 0.5rem;
   border-radius: 5px;
+  cursor: auto;
 }
 .chat-body .message-body div video,
 .chat-body .message-body div img {
@@ -59,6 +60,7 @@ body {
 .chat-body .from {
   background-color: #414141;
   color: white;
+  cursor: pointer;
 }
 .chat-body .message-hour {
   min-width: 30px;

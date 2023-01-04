@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex justify-content-center chat-footer">                    
+    <div class="d-flex justify-content-center chat-footer">                     
         <div class="form-floating w-100">
             <textarea class="p-3 form-control border-end-0 rounded-0 rounded-start hidden" id="floatingTextarea" ref="message">
             </textarea>                
@@ -11,13 +11,20 @@
         <button class="btn border bg-white d-flex align-items-center rounded-0 border-start-0 rounded-end" @click="sendText" id="btnSend">
             <span class="material-icons fs-1" translate="no">send</span>
         </button>            
+
+        <div class="absolute-background" v-if="preview.value">
+            
+        </div>
     </div>
 </template>
 <script>
 import { mapActions } from 'vuex'
 export default {
+    data: () => ({
+        preview: {}
+    }),
     methods: {
-        ...mapActions(['sendMessage']),
+        ...mapActions(['addMessage']),
         selectFile(event) {
             const selectedFile = event.target.files[0]                    
             if(selectedFile.size > 15384909){
@@ -43,7 +50,7 @@ export default {
 
         sendText() {                
             if(!this.$refs.message.value) return false;                
-            this.sendMessage({
+            this.addMessage({
                 format: 'text',
                 value: this.$refs.message.value,                    
             })          

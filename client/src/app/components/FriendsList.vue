@@ -1,23 +1,23 @@
 <template>
     <div class="h-100">        
-        <div :class="[css, 'pe-2']">
+        <div class="row align-items-center ps-2 m-0 card-friend pe-2">
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Buscar" @keyup="search($event)">                
                 <span class="input-group-text material-icons" translate="no">search</span>            
             </div>
         </div>
-        <div v-for="friend, key in friendsList" :key="key" :class="[css]"         
+        <div v-for="friend, key in friendsList" :key="key" class="row align-items-center ps-2 m-0 card-friend"         
             @click="setCurrentChat(friend); 
             $emit('closeMobileSideBar')"            
         >                 
-            <img :src="friend.image ? friend.image : profile">                        
+            <img :src="friend.image ? friend.image : profile">                                    
             <div class="col-8">
                 <div class="d-flex justify-content-between">
                     <p class="p-0 m-0 text-truncate">{{friend.name}}</p>     
-                    <small class="fw-light ms-1">{{friend.message.at(-1)?.hour}}</small>
+                    <small class="fw-light ms-1">{{friend.messages.at(-1)?.hour}}</small>
                 </div>
                 <div class="d-flex justify-content-between">        
-                    <small class="fw-lighter text-truncate p-0 m-0 d-flex" v-html="lastMessage(friend.message)">                                                                
+                    <small class="fw-lighter text-truncate p-0 m-0 d-flex" v-html="lastMessage(friend.messages)">                                                                
                     </small>            
                     <small v-if="friend.unreadMessage > 0"
                         class="ms-1 bg-light shadow-sm rounded-circle notification">
@@ -30,25 +30,25 @@
 </template>
 <script>
 import { mapMutations, mapState } from 'vuex'
-import profile from '@/assets/image/profile.jpeg'
+import { removeHtmlTags } from '@/support/helpers'
 
     export default {        
-        data:() => ({            
-            css: 'row align-items-center ps-2 m-0 card-friend',                                                                                                  
-            profile: profile,
+        data:() => ({                        
+            profile: require('@/assets/image/profile.jpeg'),
             searchResult: null
         }),
         methods:{
             ...mapMutations([
                 'setCurrentChat'
             ]),                                
-            lastMessage(listMessage){
-                const message = listMessage.at(-1)                
-                if(!message) return 
+            lastMessage(listMessage){                
+                if(!listMessage.at(-1)) return 
+                
+                const message = listMessage.at(-1)
                 if(message.format !== 'text') {
                     return `<span class="material-icons">file_open</span> ${message.format}`
                 }
-                return message.value                    
+                return removeHtmlTags(message.value)                    
             },
             search(event){
                 const inputValue = event.target.value
@@ -60,16 +60,17 @@ import profile from '@/assets/image/profile.jpeg'
                         tempUsers.push(this.users[user])
                     }                    
                 })
-
+                                
                 this.searchResult = tempUsers
             }
         },             
-        computed:{         
+        computed: {         
             ...mapState([
                 'users',
                 'userSymbolicLink'                
             ]),   
-            friendsList(){            
+
+            friendsList() {            
                 if(!this.searchResult) return this.users      
                 return this.searchResult                                          
             }

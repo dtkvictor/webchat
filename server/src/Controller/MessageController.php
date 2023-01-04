@@ -72,7 +72,7 @@ class MessageController {
             case 'disconnect':                                
                 $this->unconnected($this->from->resourceId);
                 break;
-            case 'message':
+            default:
                 $this->checkMessageOrigin();
                 $this->checkSpam();
                 $this->message();

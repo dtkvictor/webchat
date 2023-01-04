@@ -2,7 +2,7 @@
     <router-view/>          
 </template>
 <script>      
-import { mapActions, mapMutations } from 'vuex'
+import { mapMutations } from 'vuex'
   export default {            
     name: 'App',       
     created() {
@@ -20,31 +20,21 @@ import { mapActions, mapMutations } from 'vuex'
         }
 
     },               
-    methods: {
-      ...mapActions({
-        connected: 'addUser',          
-      }),
-
+    methods: {      
       ...mapMutations({                                               
-        addMessage: 'addMessage',                  
+        message: 'addMessage',    
+        update: 'editMessage',
+        delete: 'deleteMessage',              
         unconnected: 'removeUser',               
+        connected: 'addUser',          
       }),               
-
-      async message(message){
-        if(message.format != 'text') {
-          const base64Response = await fetch(message.value)
-          const blob = await base64Response.blob()
-          message.value = window.URL.createObjectURL(blob)
-        }        
-        this.addMessage(message)
-      },         
 
       registered(message) {
         message.users.forEach(user => {
           this.connected(user)
         });        
         this.$store.state.id = message.id                
-        this.$router.push({name:'Home'})              
+        this.$router.push({name:'Chat'})              
       },      
 
       error(error) {          
