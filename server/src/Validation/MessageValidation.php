@@ -15,7 +15,7 @@ class MessageValidation
         'message' => ['id', 'from', 'to', 'format', 'value', 'hour'],         
         'edit' => ['id', 'from', 'to', 'value'],         
         'delete' => ['id', 'from', 'to'],         
-        'connection' => ['name', 'image'],
+        'connection' => ['name'],
         'disconnect' => null
     ];                   
 
@@ -88,13 +88,14 @@ class MessageValidation
     private function isValidMessageData():bool
     {        
         $type = $this->payload['type'];                                
-        $data = $this->payload['data'];           
-
-        foreach($this->supportedType[$type] as $key) {                        
-            if(!array_key_exists($key, $data)) {
-                return false;            
-            }            
-        }        
+        $data = $this->payload['data'];                           
+        
+        foreach($this->supportedType[$type] as $key) {
+            if(!isset($data[$key])) {
+                return false;
+            }
+        }
+                
         return true;
     }
 
