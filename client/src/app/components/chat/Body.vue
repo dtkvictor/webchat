@@ -1,68 +1,92 @@
 <template>    
-     <div class="row chat-body">
+     <div class="row chat-body">            
             <ul class="list-message" v-if="currentChat" v-scrollTo>                                            
-                <li v-for="message, key in currentChat.messages" :key="key">
-                    
-                    <transition name="slide">
-                        <div :class="['message-container', {'justify-content-end': message.sending}]"  
-                            v-if="messageId != message.id && message.format == 'text'"                          
-                        >                      
-                            <div :class="['d-flex gap-1 message-body text-wrap text-break lh-sm', {from: message.sending}]"  
-                                @click="setMessageId(message)"                                                                                             
-                            >
-                                <div v-html="renderByFormat(message.format, message.value)"></div>
-                                <div class="text-end fw-lighter m-0 p-0 message-hour">{{message.hour}}</div>
-                            </div>             
-                        </div>
-
-                        <div class="message-container justify-content-end gap-1" v-else>                                                          
-                            <div class="w-auto">                                
-                                <input type="text" class="form-control" :value="message?.value.trim()" ref="inputEditMessage">                                
-                            </div>                        
-                            <button class="btn btn-warning rounded d-flex" @click="edit(message?.value.trim())">
-                                <span class="material-icons" translate="no">edit</span>
-                            </button>                        
-                            <button class="btn btn-danger rounded d-flex" 
-                                @click = "deleteMessage(messageId); messageId = null"
-                            >
-                                <span class="material-icons" translate="no">delete</span>
-                            </button>
-                        </div>                                                                                                                   
-                    </transition>
-
+                <li  class="mb-last-child-off" v-for="message, key in currentChat.messages" :key="key">                                        
+                    <div :class="['message-container', {'justify-content-end': message.sending}]" @click="openModalMessage(message)">                      
+                        <div :class="['d-flex gap-1 message-body text-wrap text-break lh-sm', {from: message.sending}]">                                                                
+                            <div v-html="renderByFormat(message.format, message.value)"></div>                                                                                                                                                                                                                                       
+                            <div class="text-end fw-lighter m-0 p-0 message-hour">
+                                {{message.hour}}                                 
+                            </div>         
+                        </div>                                     
+                    </div>                        
                 </li>
-            </ul>
+            </ul>                                 
+            <modal :open="currentMessage?.status || false" @close="closeModalMessage()">
+                <template v-slot:body>
+                    <div class="d-flex justify-content-center p-3 pt-0">
+                        <div v-if="currentMessage?.format !== 'text'" class="preview">
+                            <div class="mb-1" v-html="renderByFormat(currentMessage?.format, currentMessage?.value)"></div>  
+                            <div class="d-flex justify-content-end" v-if="currentMessage?.sending">
+                                <button class="btn btn-outline-danger d-flex" 
+                                    @click="deleteMessage(currentMessage.id); closeModalMessage()"
+                                >
+                                    <span class="material-icons" translate="no">delete</span>
+                                </button>
+                            </div>                                
+                        </div>
+                        <div v-else class="d-flex flex-wrap gap-1">
+                            <input class="form-control" type="text" :value="currentMessage.value.trim()" ref="inputEditMessage">
+                            <div class="d-flex justify-content-end gap-1 w-100">
+                                <button class="btn btn-outline-warning d-flex" @click="edit(currentMessage.id)">
+                                    <span class="material-icons" translate="no">edit</span>
+                                </button>
+                                <button class="btn btn-outline-danger d-flex" 
+                                    @click="deleteMessage(currentMessage.id); closeModalMessage()"
+                                >
+                                    <span class="material-icons" translate="no">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </modal>        
         </div>
 </template>
 <script>
 import { mapActions, mapState } from 'vuex';
-import { renderByFormat } from '@/support/helpers';
+import { renderByFormat, removeHtmlTags } from '@/support/helpers';
+import Modal from '@/app/components/Modal.vue';
 
-export default {
+export default {    
+    components: { Modal },
     data: () => ({
-        messageId:null,        
+        currentMessage: null                   
     }),
     computed: {
         ...mapState(['currentChat']),        
     },
-    methods: {
-        ...mapActions(['editMessage', 'deleteMessage']),
+    methods: {        
         renderByFormat,           
-        setMessageId(message) {
-            if(message.sending) {
-                this.messageId = message.id
-            } 
-        },        
-        edit(currentValue) {                        
-            const value = this.$refs.inputEditMessage[0].value        
-            if(this.messageId && value && currentValue != value) {
+        removeHtmlTags,        
+        ...mapActions([
+            'editMessage',
+            'deleteMessage'
+        ]),            
+
+        edit(id) {                                    
+            const value = this.$refs.inputEditMessage.value
+            if(value && id && this.currentMessage.status) {
                 this.editMessage({
-                    id: this.messageId,
+                    id: id,
                     value: value
                 })     
-            }            
-            this.messageId = null
-        },        
+            }          
+            this.closeModalMessage()                  
+        },                
+
+        openModalMessage(message) {
+            if(!message?.sending && message.format === 'text') {
+                return false
+            }
+            this.currentMessage = message
+            this.currentMessage.status = true            
+        },
+        
+        closeModalMessage() {
+            this.currentMessage.status = false
+        }
+
     },    
 }
 </script>

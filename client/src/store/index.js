@@ -6,13 +6,11 @@ moment.locale('pt-br')
 export default createStore({ 
 
   state:() => ({
-
-    socket: new WebSocket('ws://10.42.0.1:8888'),
+    socket: new WebSocket('ws://localhost:8888'),
     id:null,
     currentChat: null,                    
     users: new Object(),    
-    userSymbolicLink: [],    
-        
+    userSymbolicLink: [],            
   }),  
 
   getters: {    
@@ -60,21 +58,21 @@ export default createStore({
 
     editMessage(state, payload) {            
       const userId = payload.from !== state.id ? payload.from : payload.to
-      if(!state.users[userId]) return false
+      if(!state.users[userId]) return 
 
       state.users[userId].messages.forEach(message => {
         if(message.id === payload.id) {
           message.value = payload.value
-          return false
+          return
         }
-      })
+      })      
     },
 
     deleteMessage(state, payload) {      
       const userId = payload.from !== state.id ? payload.from : payload.to
       if(!state.users[userId]) return false
       
-      if(state.users[userId] != state.currentChat.id) {
+      if(state.users[userId] != state.currentChat?.id) {
         state.users[userId].unreadMessage --
       }
 
@@ -129,7 +127,7 @@ export default createStore({
         defaultPayload.data.value = await binaryToUrlBase64(dataMessage.value)        
         commit('sendMessage', defaultPayload)     
         //localFile 
-        defaultPayload.data.value = ''
+        defaultPayload.data.value = dataMessage.localFile
         commit('addMessage', defaultPayload.data)
         return         
       }       

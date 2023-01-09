@@ -3,10 +3,10 @@
         <div class="row align-items-center ps-2 m-0 card-friend pe-2">
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Buscar" @keyup="search($event)">                
-                <span class="input-group-text material-icons" translate="no">search</span>            
+                <span class="input-group-text material-icons" translate="no">search</span>                                  
             </div>
         </div>
-        <div v-for="friend, key in friendsList" :key="key" class="row align-items-center ps-2 m-0 card-friend"         
+        <div v-for="friend, key in friendsList" :key="key" class="row align-items-center ps-2 m-0 card-friend "         
             @click="setCurrentChat(friend); 
             $emit('closeMobileSideBar')"            
         >                 
@@ -40,7 +40,7 @@ import { removeHtmlTags } from '@/support/helpers'
         methods:{
             ...mapMutations([
                 'setCurrentChat'
-            ]),                                
+            ]),                                            
             lastMessage(listMessage){                
                 if(!listMessage.at(-1)) return 
                 

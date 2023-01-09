@@ -8,6 +8,7 @@ import 'material-icons/iconfont/material-icons.css'
 import '../src/assets/css/style.css'
 
 const Vue = createApp(App);
+
 Vue.directive('scrollTo', {
     updated(el) {                
         el.scrollTop = el.scrollHeight        

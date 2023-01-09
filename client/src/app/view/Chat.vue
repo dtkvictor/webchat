@@ -5,17 +5,23 @@
                 open:mobileSideBar,
                 close:!mobileSideBar
             }">
-                <friends-list></friends-list>
+                <friends-list @closeMobileSideBar="mobileSideBar = false"></friends-list>
             </aside>            
             <div class="col-12 col-lg-9 chat">                
-                <div class="chat-container" v-if="currentChat">                                            
-                    <chat-header/>
-                    <chat-body/>
-                    <chat-footer/>                    
+                <div class="chat-container">                                            
+                    <chat-header>
+                        <template v-slot:showListUsers>                                                
+                            <button class="btn btn-outline-dark friendsMenu" @click="mobileSideBar = !mobileSideBar">
+                                <transition name='fade'>
+                                    <span class="material-icons" translate="no" v-if="!mobileSideBar">groups</span>
+                                    <span class="material-icons" translate="no" v-else>close</span>
+                                </transition>
+                            </button>                                                    
+                        </template>
+                    </chat-header>
+                    <chat-body v-if="currentChat"/>
+                    <chat-footer v-if="currentChat"/>                    
                 </div>   
-                <div v-else class="d-flex justify-content-center align-items-center text-light h-100">
-                    <h3>Mensage</h3> 
-                </div>                               
             </div>                                                                    
         </div>        
     </div>    
@@ -42,7 +48,7 @@ export default {
             const touchStart = this.touchstart.changedTouches[0].clientX
             const touchEnd = event.changedTouches[0].clientX   
 
-            if(touchStart < touchEnd) {
+            if((touchStart * 2) < (touchEnd)) {
                 this.mobileSideBar = true
             }else if (touchStart > touchEnd) {
                 this.mobileSideBar = false

@@ -1,5 +1,6 @@
 export function removeHtmlTags(str) 
 {        
+    if(!str) return false;
     return str.replace(/(<([^>]+)>)/ig, '')
 }
 

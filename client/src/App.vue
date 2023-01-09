@@ -23,7 +23,7 @@ import { mapMutations } from 'vuex'
     methods: {      
       ...mapMutations({                                               
         message: 'addMessage',    
-        update: 'editMessage',
+        edit: 'editMessage',
         delete: 'deleteMessage',              
         unconnected: 'removeUser',               
         connected: 'addUser',          

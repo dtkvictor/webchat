@@ -37,9 +37,11 @@ body {
   display: flex;
   list-style: none;
   width: 100%;
+}
+.chat-body .mb-last-child-off {
   margin-bottom: 0.5rem;
 }
-.chat-body .message-container:last-child {
+.chat-body .mb-last-child-off:last-child {
   margin-bottom: 0rem;
 }
 .chat-body .message-body {
@@ -48,7 +50,7 @@ body {
   background-color: white;
   padding: 0.3rem 0.5rem;
   border-radius: 5px;
-  cursor: auto;
+  cursor: pointer !important;
 }
 .chat-body .message-body div video,
 .chat-body .message-body div img {
@@ -60,7 +62,6 @@ body {
 .chat-body .from {
   background-color: #414141;
   color: white;
-  cursor: pointer;
 }
 .chat-body .message-hour {
   min-width: 30px;
@@ -73,17 +74,16 @@ body {
 }
 @media (max-width: 993px) {
   .friendsMenu {
-    width: 3em;
-    height: 3em;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    width: auto;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-right: 1rem;
     position: absolute;
-    right: 0;
+    right: 0.8rem;
   }
   .friendsMenu .material-icons {
-    font-size: 2.5rem;
     position: absolute;
   }
 }
@@ -94,7 +94,7 @@ body {
 }
 @media (max-width: 993px) {
   .friends {
-    width: 80%;
+    width: calc(100% - 4.1rem);
     position: absolute;
     z-index: 1;
     box-shadow: 1px 2px 5px black;
@@ -111,7 +111,7 @@ body {
   border-radius: 50%;
 }
 .friends .card-friend:hover {
-  cursor: pointer;
+  cursor: pointer !important;
   background-color: #f8f9fa;
 }
 .register {
@@ -185,9 +185,10 @@ body {
   }
 }
 .pointer {
-  cursor: pointer;
+  cursor: pointer !important;
 }
 .absolute-background {
+  z-index: 1000;
   height: 100%;
   width: 100%;
   display: flex;
@@ -200,6 +201,7 @@ body {
 }
 .fade-enter-from,
 .fade-leave-to {
+  transform: scale(0.5);
   opacity: 0;
 }
 .fade-enter-active,
@@ -208,5 +210,6 @@ body {
 }
 .fade-enter-to,
 .fade-leave-from {
+  transform: scale(1);
   opacity: 1;
 }

@@ -11,20 +11,29 @@
         <button class="btn border bg-white d-flex align-items-center rounded-0 border-start-0 rounded-end" @click="sendText" id="btnSend">
             <span class="material-icons fs-1" translate="no">send</span>
         </button>            
-
-        <div class="absolute-background" v-if="preview.value">
-            
-        </div>
+        <preview :preview="preview" @close="preview.status = false">
+            <template v-slot:footer>
+                <button class="btn btn-outline-dark d-flex">                
+                    <span class="material-icons" translate="no" @click="preview.status = false">close</span>
+                </button>
+                <button class="btn btn-outline-dark d-flex " @click="sendFile">                
+                    <span class="material-icons" translate="no">send</span>
+                </button>               
+            </template>
+        </preview>        
     </div>
 </template>
 <script>
 import { mapActions } from 'vuex'
+import Preview from '@/app/components/chat/Preview.vue'
+
 export default {
+    components: {Preview},
     data: () => ({
         preview: {}
     }),
     methods: {
-        ...mapActions(['addMessage']),
+        ...mapActions(['addMessage']),        
         selectFile(event) {
             const selectedFile = event.target.files[0]                    
             if(selectedFile.size > 15384909){
@@ -32,20 +41,21 @@ export default {
                 //setTimeout(() => {this.error = false}, 4000)
                 return false                         
             }
+            this.preview.status = true
             this.preview.name = selectedFile.name                                    
             this.preview.value = selectedFile
-            this.preview.localFile = window.URL.createObjectURL(selectedFile)
+            this.preview.url = window.URL.createObjectURL(selectedFile)
             this.preview.format = selectedFile.type.split('/')[0]                    
         },
         
         sendFile() {                                
-            this.sendMessage({                    
+            this.addMessage({                    
                 format: this.preview.format, 
                 value: this.preview.value,   
-                localFile: this.preview.localFile,
+                localFile: this.preview.url,
                 isFile: true
             })   
-            this.preview = {}
+            this.preview.status = false            
         },
 
         sendText() {                

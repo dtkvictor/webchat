@@ -38,11 +38,14 @@ body {
     .message-container {
         display: flex;
         list-style: none;
-        width: 100%;
-        margin-bottom: .5rem;
+        width: 100%;             
     }
 
-    .message-container:last-child {
+    .mb-last-child-off{
+        margin-bottom: .5rem;
+    };
+
+    .mb-last-child-off:last-child {
         margin-bottom: 0rem;
     }        
 
@@ -52,7 +55,7 @@ body {
         background-color: white;                                     
         padding: 0.3rem 0.5rem;
         border-radius: 5px;        
-        cursor: auto;   
+        .pointer();
 
         div {
             video, img {
@@ -66,8 +69,7 @@ body {
 
     .from {
         background-color: #414141;            
-        color: white;   
-        .pointer();
+        color: white;           
     }            
 
     .message-hour {
@@ -82,20 +84,19 @@ body {
 //friendsList
 .friendsMenu {
     display: none;    
-    @media @mobile {        
-        width: 3em;
-        height: 3em;
+    @media @mobile {     
+        min-width: 2.5rem;           
+        min-height: 2.5rem;
+        width: auto;
         display: flex;
         justify-content: center;
-        align-items: center;    
-        margin-right: 1rem;     
+        align-items: center;            
         position: absolute;        
-        right: 0;
+        right: .8rem;        
         .material-icons {
-            font-size: 2.5rem;
             position: absolute;
         }
-    }
+    }        
 }
 
 .friends {    
@@ -104,7 +105,7 @@ body {
     background-color: white;
 
     @media @mobile {    
-        width: 80%;        
+        width: calc(100% - 4.1rem);        
         position: absolute;    
         z-index: 1;        
         box-shadow: 1px 2px 5px black;        
@@ -198,10 +199,11 @@ body {
 }
 
 .pointer {
-    cursor:pointer    
+    cursor: pointer !important   
 }
 
 .absolute-background {
+    z-index: 1000;
     height: 100%;
     width: 100%;
     display: flex;
@@ -213,12 +215,15 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
+//effect
 .fade-enter-from, .fade-leave-to{        
+    transform: scale(.5);
     opacity: 0;
 }
 .fade-enter-active, .fade-leave-active {
     transition: 1s;
 }
 .fade-enter-to, .fade-leave-from {    
+    transform: scale(1);
     opacity: 1;
 }
