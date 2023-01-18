@@ -19,7 +19,7 @@
                             <div class="mb-1" v-html="renderByFormat(currentMessage?.format, currentMessage?.value)"></div>  
                             <div class="d-flex justify-content-end" v-if="currentMessage?.sending">
                                 <button class="btn btn-outline-danger d-flex" 
-                                    @click="deleteMessage(currentMessage.id); closeModalMessage()"
+                                    @click="deleteMessageById(currentMessage.id); closeModalMessage()"
                                 >
                                     <span class="material-icons" translate="no">delete</span>
                                 </button>
@@ -32,7 +32,7 @@
                                     <span class="material-icons" translate="no">edit</span>
                                 </button>
                                 <button class="btn btn-outline-danger d-flex" 
-                                    @click="deleteMessage(currentMessage.id); closeModalMessage()"
+                                    @click="deleteMessageById(currentMessage.id); closeModalMessage()"
                                 >
                                     <span class="material-icons" translate="no">delete</span>
                                 </button>
@@ -40,28 +40,28 @@
                         </div>
                     </div>
                 </template>
-            </modal>        
+            </modal>     
         </div>
 </template>
 <script>
 import { mapActions, mapState } from 'vuex';
-import { renderByFormat, removeHtmlTags } from '@/support/helpers';
+import { renderByFormat } from '@/support/helpers';
 import Modal from '@/app/components/Modal.vue';
 
 export default {    
     components: { Modal },
     data: () => ({
-        currentMessage: null                   
+        currentMessage: null,               
     }),
     computed: {
         ...mapState(['currentChat']),        
     },
     methods: {        
         renderByFormat,           
-        removeHtmlTags,        
+                 
         ...mapActions([
             'editMessage',
-            'deleteMessage'
+            'deleteMessageById'
         ]),            
 
         edit(id) {                                    
