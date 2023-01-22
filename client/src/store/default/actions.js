@@ -1,63 +1,71 @@
 export default {
-    async registerUser({ commit, state }, data ) {
-        state.name = data.name
-        state.image = data.image.urlBlob || require("@/assets/image/profile.jpeg") 
-        commit('send', {
-            type:'connection',
-            data: {
-                name: data.name, 
-                image: data.image.file ? await binaryToUrlBase64(data.image.file) : null
-            }
-          })   
-      },
-  
-      async updateDataUser({ commit, state }, payload ) {                
-        
-        if(payload.field == 'image') {                
-          window.URL.revokeObjectURL(state.image)
-          state.image = window.URL.createObjectURL(payload.value)      
-          payload.value = await binaryToUrlBase64(payload.value)
-  
-        } else {
-          state.image = payload.value
-        }            
-  
-        payload.from = state.id    
-        commit('send', {type: 'update', data: payload })       
-      },
-  
-      async editMessage({ commit, getters }, data) {                  
-        const payload = getters.defaultPayload        
-          payload.type = 'edit'      
-          payload.data.id = data.id
-          payload.data.value = data.value        
-  
-        commit('send', payload)
-        commit('editMessage', payload.data)
-      },
-  
-      async deleteMessageById({ commit, getters}, id) {
-        const payload = getters.defaultPayload        
-        payload.type = 'delete'      
-        payload.data.id = id        
-        commit('send', payload)
-        commit('deleteMessage', payload.data)      
-      },
-  
-      async sendMessageFileFormat( { commit, getters }, data) {
-        const payload = getters.defaultPayload;      
-        payload.data.value = await binaryToUrlBase64(data.file)
-        payload.data.format = data.format  
-        commit('send', payload)   
-        
-        payload.data.value = data.localFile
-        commit('addMessage', payload.data)      
-      },
-      
-      async sendMessage({ commit, getters }, message) {           
-        const payload = getters.defaultPayload;      
-        payload.data.value = message      
-        commit('send', payload)             
-        commit('addMessage', payload.data) 
-      },    
+
+  async registerUser({ commit, state }, { name, file, objectUrl = null} ) 
+  {
+    state.name = name
+    state.image = objectUrl || require("@/assets/image/profile.jpeg")         
+    
+    commit('send', {
+        type:'connection',
+        data: {
+            name: name, 
+            image: file ? await state.helpers.binaryToUrlBase64(file) : null
+        }
+    })   
+  },
+
+  async updateDataUser({ commit, state }, { field, value, objectUrl = null }) 
+  {                                            
+    const payload = {
+      type: 'update',
+      data: { from: state.id, field: field, value: value }
+    }
+    
+    if(field === 'image') {
+      window.URL.revokeObjectURL(state.image)
+      state.image = objectUrl
+      payload.data.value = await state.helpers.binaryToUrlBase64(value)
+
+    }else {
+      state.name = value
+    }
+
+    commit('send', payload)          
+  },
+
+  async sendMessage( { commit, getters, state }, { value, format = null, objectUrl = null }) 
+  {         
+    const payload = getters.defaultPayload;      
+    payload.data.value = value
+
+    if(format && format !== 'text') {
+      payload.data.value = await state.helpers.binaryToUrlBase64(value)  
+      payload.data.format = format
+    }        
+    
+    commit('send', payload)       
+    payload.data.value = objectUrl || value        
+    commit('addMessage', payload.data)        
+  },
+
+  async editMessage({ commit, getters }, { id, value }) 
+  {                  
+    const payload = getters.defaultPayload        
+      payload.type = 'edit'      
+      payload.data.id = id
+      payload.data.value = value            
+
+    commit('send', payload)        
+    commit('editMessage', payload.data)
+  },
+
+  async deleteMessage({ commit, getters }, messageId) 
+  {
+    const payload = getters.defaultPayload        
+      payload.type = 'delete'      
+      payload.data.id = messageId
+
+    commit('send', payload)
+    commit('deleteMessage', payload.data)      
+  },    
 }
