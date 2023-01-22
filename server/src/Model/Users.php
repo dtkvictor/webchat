@@ -27,7 +27,7 @@ class Users
     {
         $resourceId = $conn->resourceId; 
 
-        if(!$this->exists($resourceId)) {            
+        if(!$this->exists($resourceId) || !empty($name)) {            
             $this->users[$resourceId] = new stdClass;
             $this->users[$resourceId]->conn = $conn;            
             $this->users[$resourceId]->lastMessageTime = time();
@@ -43,6 +43,16 @@ class Users
         }
         return [];
     }    
+
+    public function update(int $resourceId, string $field, string $value):bool
+    {
+        if(!$this->exists($resourceId) || $field === 'id') return false;       
+        if(!array_key_exists($field, $this->users[$resourceId]->data)){
+            return false;
+        }         
+        $this->users[$resourceId]->data[$field] = $value;
+        return true;
+    }
 
     public function remove(int $resourceId):void
     {        
