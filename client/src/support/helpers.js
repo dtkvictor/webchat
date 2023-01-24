@@ -3,11 +3,11 @@ export default class {
     removeHtmlTags(str) 
     {        
         if(!str) return false;
-        return str.replace(/(<([^>]+)>)/ig, '')
+        return str.replace(/(<([^>]+)>)/ig, '').trim()
     }
 
     renderByFormat(format, value) 
-    {   
+    {           
         switch(format) {
             case 'image':     
                 return `<img src=${value}>`                        
@@ -16,8 +16,16 @@ export default class {
             case 'audio':
                 return `<audio controls src=${value}></audio`                        
             default:
-                return value
+                return this.removeHtmlTags(value)
         }
+    }
+
+    notificationByFormat(format, value) 
+    {
+        if (format !== "text") {
+            return `<span class="material-icons">file_open</span> ${format}`;
+        }
+        return this.removeHtmlTags(value);
     }
 
     binaryToUrlBase64(binary) 
@@ -40,6 +48,7 @@ export default class {
             messageLineHeight: '25',                                                   
             position: 'topCenter',  
             timeout: 5000,        
-        }
+        }        
     }
+        
 }

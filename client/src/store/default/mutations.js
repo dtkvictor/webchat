@@ -1,4 +1,22 @@
 export default {
+  socketStart(state) {
+
+    state.socket = new WebSocket('ws://localhost:8888')
+    
+    if(state.onmessage) {
+      state.socket.onmessage = state.onmessage
+    }
+
+    if(state.onerror) {
+      state.socket.onerror = state.onerror
+    }
+
+  },
+
+  socketSetEvent(state, {onmessage = null, onerror = null}){
+    state.onmessage = onmessage;
+    state.onerror = onerror
+  },
 
   setCurrentChat(state, object) {     
     if(!object) return               
@@ -7,8 +25,7 @@ export default {
   },    
 
   resetCurrentChat(state) {
-    state.currentChat = null
-    console.log(state.currentChat)
+    state.currentChat = null    
   },
 
   addUser(state, user) {              
@@ -18,6 +35,7 @@ export default {
       user.messages = []                
       user.unreadMessage = 0              
       state.users[user.id] = user         
+      state.amountUsers ++
   },
 
   updateDataUser(state, payload) {                               
@@ -34,13 +52,13 @@ export default {
         const payload = state.helpers.defaultDataNotificationToats()
           payload.image = state.users[userId].image
           payload.title = state.users[userId].name
-          payload.message = message.value       
+          payload.message = state.helpers.notificationByFormat(message.format, message.value)       
 
         state.users[userId].unreadMessage ++
         if(state.showNotification) state.iziToast.show(payload)                                 
       }                                
 
-      message.value = state.helpers.removeHtmlTags(message.value)
+      message.value = state.helpers.renderByFormat(message.format, message.value)
       state.users[userId].messages.push(message) 
   },      
 
@@ -71,12 +89,12 @@ export default {
   removeUser(state, user) {           
       if(state.currentChat?.id == user.id) {
         state.currentChat = null
-      }                                                
+      }                          
+      state.amountUsers --                      
       delete state.users[user.id]
   },    
 
-  send(state, payload) {            
-    console.log(JSON.stringify(payload))
+  send(state, payload) {                
     state.socket.send(JSON.stringify(payload))     
   }     
 }

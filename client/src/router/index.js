@@ -16,9 +16,13 @@ const router = createRouter({
     routes
 })
 
-router.beforeEach((to, from, next) => {      
-    if (to.name == 'Chat' && !store.state.id) next({name:'Register'})
+router.beforeEach((to, from, next) => {          
+    if(!to.name) next({name:'Chat'})
+    else if (to.name == 'Chat' && !store.state.id) next({name:'Register'})
     else if (to.name == 'Register' && store.state.id) next({name:'Chat'})    
+    else if (to.name == 'Error' && store.state.connectionState !== false) {
+        next({name:'Register'})
+    } 
     else next()
 })
 

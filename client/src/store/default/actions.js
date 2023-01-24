@@ -59,13 +59,16 @@ export default {
     commit('editMessage', payload.data)
   },
 
-  async deleteMessage({ commit, getters }, messageId) 
+  async deleteMessage({ commit, getters, state }, { from, messageId }) 
   {
     const payload = getters.defaultPayload        
       payload.type = 'delete'      
       payload.data.id = messageId
+    
+    if(from === state.id) {
+      commit('send', payload)
+    }    
 
-    commit('send', payload)
     commit('deleteMessage', payload.data)      
   },    
 }

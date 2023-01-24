@@ -9,6 +9,10 @@ export default {
             hour: state.moment().format('HH:mm'),
             format: 'text',
         }      
-    }),         
+    }),            
+    
+    connection(state) {
+        return state.socket.readState
+    }
     
 }

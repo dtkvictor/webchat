@@ -41,7 +41,8 @@
                             type="text" 
                             :value="$store.state.name"                             
                             :maxLength="50"                                                                                
-                            :minLength="2"                                                                                                                
+                            :minLength="2"             
+                            on="blur"                                                                                                   
                             @value = "name = $event"
                             @blur="setDefaultName($event)"
                         />
@@ -63,7 +64,7 @@
     </transition>
 </template>
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 export default {        
     props: {
         open: {
@@ -88,15 +89,17 @@ export default {
     },    
     methods: {       
         ...mapActions(['updateDataUser']), 
+        ...mapState(['iziToast']),
         updateImage() {           
             if(!this.file) return 
             
             this.updateDataUser({
                 field: 'image',
-                value: this.file
+                value: this.file,
+                objectUrl: this.urlBlob
             })                       
 
-            this.$iziToast.success({
+            this.iziToast().success({
                 message: "Foto de perfil atualizada com sucesso!"
             })
 
@@ -110,7 +113,7 @@ export default {
                 value: this.name
             })                
 
-            this.$iziToast.success({
+            this.iziToast().success({
                 message: "Nome de usuário atualizado com sucesso!"
             })              
 

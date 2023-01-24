@@ -1,109 +1,92 @@
 <template>
-    <section id="Register" class="h-100 d-flex justify-content-center align-items-center register">
-        <div class="form-register p-3">            
-            <div class="col-12 text-center mb-4 mt-3">
-                <img class="border border-dark rounded mx-auto d-block img-size" :src="(profilePicture ?? defaultProfilePicture)" alt="profilePicture">                                                
+    <section id="Register" class="h-100 d-flex justify-content-center align-items-center register">        
+        <div class="form-register p-3">                        
+            <div class="col-12 text-center mb-4 mt-3">                
+                <img class="border border-dark rounded mx-auto d-block img-size" 
+                :src="(profilePicture.urlBlob ?? defaultProfilePicture)" alt="profilePicture">                                                
             </div>                                                                    
             <div class="d-grid justify-content-center">                                            
                 <div class="mb-3">
                     <label class="form-label" for="profilePicture">Escolha uma foto:</label>
-                    <input type="file" class="form-control" id="profilePicture" @change="getProfilePicture($event)" accept="image/jpeg">                          
+                    <div class="input-group">                        
+                        <input-component 
+                            id="profilePicture" 
+                            :self="true"
+                            type="file" 
+                            class="form-control" 
+                            accept="image/*"     
+                            @self="inputProfilePicture = $event"                                                       
+                            @value="setProfilePicture($event)" 
+                            @error="error.file = true"
+                        />                                              
+                        <button :class="['input-group-text material-icons ',{ 'text-danger': profilePicture.urlBlob }]" 
+                            @click="resetProfilePicture"
+                            :disabled="!profilePicture.urlBlob"
+                        >delete</button>
+                    </div>
                     <Transition name="fade">
-                        <small class="text-danger" role="alert" v-if="alert.invalidFormat">
-                            O arquivo deve ser uma imagem do tipo JPEG
+                        <small class="text-danger" role="alert" v-if="error.file">
+                            A imagem deve ter no máximo 10mb!
                         </small>                        
                     </Transition>                                        
                 </div>   
-                <div class="mb-3">
+                <div class="mb-4">
                     <label class="form-label" for="username">Nome:</label>
-                    <input type="text" class="form-control" id="username" placeholder=""
-                        v-model="name"                         
-                        @keypress="getKey($event)" 
-                        @keyup="validateUsername"                        
-                    >                                        
-                    <div style="height:20px">
-                        <Transition name="fade">
-                            <small class="text-danger" v-if="alert.maxLength">
-                                O nome deve ter no máximo 50 caracteres                                                 
-                            </small>                                            
-                        </Transition>           
-                    </div>                     
-                </div>                              
-                <button type="button" class="register-button-size btn btn-dark p-0" @click="register" 
-                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Preencha todos os campos"
-                >
+                    <input-component 
+                        id="username"
+                        type="text"                         
+                        class="form-control" 
+                        :maxLength="50" 
+                        :minLength="2"
+                        :alert="{ minLength: false }"
+                        @error="error.text = $event === 'minLength' ? name = null : $event"
+                        @value="name = $event"
+                        @keypress="registerByEnter($event)"
+                    />                                                                  
+                </div>                                              
+                <button type="button" class="register-button-size btn btn-dark p-0" @click="register" :disabled="!name">
                     Salvar
-                </button>                     
-                <Transition name="fade">
-                    <small class="text-danger" v-if="alert.invalidField">
-                        Por favor, preencha todos os campos.
-                    </small>                                            
-                </Transition>     
+                </button>                                 
             </div>
         </div>                       
     </section>
 </template>
-<script>
-    import profile from '@/assets/image/profile.jpeg'
-    import { mapMutations, mapState } from 'vuex'
+<script>    
+import { mapActions } from 'vuex'
 
-    export default {                     
-        data: () => ({  
-            ...mapState(['socket']),
-            name:null,              
-            profilePicture:null,                
-            defaultProfilePicture:profile,  
-            alert: {
-                maxLength:false,
-                invalidFormat:false,
-                invalidField:false,
+export default {                     
+    data: () => ({                
+        name: null,                
+        inputProfilePicture: null,
+        profilePicture: {},                        
+        defaultProfilePicture: require('@/assets/image/profile.jpeg'),  
+        error: {}
+    }),                                   
+    methods: {            
+        ...mapActions(['registerUser']),             
+        setProfilePicture(file) {                  
+            if(this.profilePicture.urlBlob) {
+                window.URL.revokeObjectURL(this.profilePicture.urlBlob)
             }
-        }),                                   
-        methods: {            
-            ...mapMutations([
-                'setAuth',
-                'sendMessage'
-            ]),
-            getKey(event) {
-                this.validateUsername()
-                if(event.key === 'Enter') this.register()                
-            },            
-            register() {                
-                if(!this.name){
-                    this.alert.invalidField = true
-                    return false
-                }           
-                this.$store.state.socket.send(JSON.stringify({
-                    type:'connection',
-                    data: {
-                        name: this.name, 
-                        image: this.profilePicture
-                    }
-                }))                                                                                                        
-            },
-            validateUsername() {
-                if(this.name && this.name.length >= 50){
-                    this.name = this.name.substr(0,50);
-                    this.alert.maxLength = true;                    
-                }else{
-                    this.alert.maxLength = false
-                }                                
-            },
-            validateFormatImage(image) {                                        
-                if(image.type != 'image/jpeg'){
-                    this.alert.invalidFormat = true;
-                    return false
-                }                
-                return true;
-            },            
-            getProfilePicture(event) {  
-                const image = event.target.files[0]
-                const file = new FileReader();
-                if(this.validateFormatImage(image)){
-                    file.onload = (data) => this.profilePicture = data.target.result
-                    file.readAsDataURL(image)                                                                    
-                }
-            },
-        }
+            this.profilePicture.urlBlob = window.URL.createObjectURL(file)
+            this.profilePicture.file = file            
+        },
+        registerByEnter(event) {
+            if(event.key === 'Enter' && this.name) this.register() 
+        },
+        register() {                
+            if(!this.name) return false                                   
+            this.registerUser({
+                name: this.name,
+                file: this.profilePicture.file,                                
+                objectUrl: this.profilePicture.urlBlob,                                
+            })                                                                                                                                   
+        },                  
+        resetProfilePicture() {
+            window.URL.revokeObjectURL(this.profilePicture.urlBlob)
+            this.profilePicture = {}            
+            this.inputProfilePicture.value = null
+        }      
     }
+}
 </script>

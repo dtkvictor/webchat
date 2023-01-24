@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex justify-content-center chat-footer" @keypress="sendMessageByEnter($event)">                     
         <div class="form-floating w-100">
-            <textarea class="p-3 form-control border-end-0 rounded-0 rounded-start hidden" id="floatingTextarea" ref="message">
+            <textarea class="h-100 p-3 form-control border-end-0 rounded-0 rounded-start hidden" id="floatingTextarea" ref="message">
             </textarea>                
         </div>    
         <div class="btn border bg-white d-flex align-items-center rounded-0 border-start-0 border-end-0">                
@@ -41,27 +41,28 @@ export default {
         error: {}
     }),
     methods: {        
-        ...mapActions(['sendMessage', 'sendMessageFileFormat']),        
+        ...mapActions(['sendMessage']),        
         selectFile(file) {                                                     
             this.preview.status = true
             this.preview.name = file.name                                    
             this.preview.value = file
             this.preview.url = window.URL.createObjectURL(file)
             this.preview.format = file.type.split('/')[0]                    
-        },
+        },                
         
         sendFile() {                                
-            this.sendMessageFileFormat({                    
+            this.sendMessage({          
                 format: this.preview.format, 
-                file: this.preview.value,   
-                localFile: this.preview.url                
+                value: this.preview.value,   
+                objectUrl: this.preview.url                
             })   
             this.preview.status = false            
         },
 
         sendText() {                
             if(!this.$refs.message.value) return false;                
-            this.sendMessage(this.$refs.message.value) 
+            console.log(this.$refs.message.value)
+            this.sendMessage({value: this.$refs.message.value}) 
             this.$refs.message.value = ''
         },                       
 

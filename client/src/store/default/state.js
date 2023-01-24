@@ -5,14 +5,18 @@ moment.locale('pt-br')
 
 export default {
     
-    socket: new WebSocket('ws://localhost:8888'),
+    socket: null,
+    onmessage: null,
+    onerror: null,
+    connectionState: null,    
     
     id: null,
     name: null,
     image: null,
   
     currentChat: null,                    
-    users: new Object(),          
+    users: new Object(), 
+    amountUsers: 0,         
     
     sendByEnter: false,    
     showNotification: true,
