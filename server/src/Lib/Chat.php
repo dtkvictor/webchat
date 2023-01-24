@@ -17,6 +17,7 @@ class Chat implements MessageComponentInterface
 
     public function onOpen(ConnectionInterface $conn) {
         $conn->send($this->message->defaultPayload('success', [
+            'type' => 'success',
             'message' => 'successful connection'
         ]));
     }   

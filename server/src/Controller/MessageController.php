@@ -63,21 +63,20 @@ class MessageController {
         
         if(!$this->messageValidation->isValid()) {          
             throw new Exception($this->messageValidation->feedback(), 1007);                                    
-        }                                                          
-                
-        switch($this->message['type']) {
-            case 'connection':
-                $this->connection();
-                break;
-            case 'disconnect':                                
-                $this->unconnected($this->from->resourceId);
-                break;
-            default:
-                $this->checkMessageOrigin();
-                $this->checkSpam();
-                $this->message();
-                break;
-        }          
+        }                       
+        
+        if($this->users->exists($this->from->resourceId)) {
+            $this->checkMessageOrigin();
+            $this->checkSpam();
+        }
+        
+        $runTheMethodByType = $this->message['type'];        
+
+        if(method_exists($this, $runTheMethodByType)){
+            $this->$runTheMethodByType();             
+        }else {
+            $this->message();
+        }        
         
         $this->message = [];
     }    
@@ -85,11 +84,31 @@ class MessageController {
     private function message():void
     {            
         $user = $this->users->find($this->message['data']['to']);
-        $this->message['data']['value'] = 
-            filter_var($this->message['data']['value'], FILTER_SANITIZE_SPECIAL_CHARS);            
+        if(isset($this->message['data']['value'])) {
+            $this->message['data']['value'] = strip_tags($this->message['data']['value']);             
+        }        
         if(isset($user->conn)) {            
             $user->conn->send(json_encode($this->message));
         }        
+    }
+
+    private function update():void 
+    {        
+        $this->message['data']['value'] = strip_tags($this->message['data']['value']);    
+
+        if( $this->users->update (
+            $this->from->resourceId, 
+            $this->message['data']['field'], 
+            $this->message['data']['value'] )
+        ) {        
+            foreach($this->users->get() as $user) {                
+                if($user->data['id'] !== $this->from->resourceId) {
+                    $user->conn->send(json_encode($this->message));
+                }                
+            }
+        }
+
+
     }
 
     private function connection():void

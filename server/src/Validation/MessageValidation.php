@@ -15,12 +15,18 @@ class MessageValidation
         'message' => ['id', 'from', 'to', 'format', 'value', 'hour'],         
         'edit' => ['id', 'from', 'to', 'value'],         
         'delete' => ['id', 'from', 'to'],         
-        'connection' => ['name'],
-        'disconnect' => null
-    ];                   
+        'update' => ['from', 'field', 'value'],
+        'connection' => ['name']        
+    ];                       
+
+
+
+    private array $supportedDataType = [        
+        'connection' => ['string', 'null'],    
+    ];
 
     public function set(array $payload):void
-    {                    
+    {                            
         $this->payload = $payload;
     }    
 
@@ -40,7 +46,10 @@ class MessageValidation
             
         } else if (!$this->isValidMessageData()) {
             $this->feedback = 'Undefined or invalid data';
-        }                       
+
+        } else if (!$this->isValidTypeData()) {
+            $this->feedback = 'The given data type is not supported';
+        }                      
     }
 
     /**
@@ -88,7 +97,7 @@ class MessageValidation
     private function isValidMessageData():bool
     {        
         $type = $this->payload['type'];                                
-        $data = $this->payload['data'];                           
+        $data = $this->payload['data'];                                   
         
         foreach($this->supportedType[$type] as $key) {
             if(!isset($data[$key])) {
@@ -99,4 +108,21 @@ class MessageValidation
         return true;
     }
 
+    private function isValidTypeData():bool
+    {
+        $type = $this->payload['type'];                                
+        $data = $this->payload['data'];                          
+
+        if(isset($this->supportedDataType[$type])) {
+            $supportedDataType = $this->supportedDataType[$type];            
+            foreach($data as $value) {                  
+                $fieldDataType = strtolower(gettype($value));                
+                if(!in_array($fieldDataType, $supportedDataType)) {
+                    return false;
+                }                
+            }
+
+        }                    
+        return true; 
+    }
 }
