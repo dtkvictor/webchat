@@ -20,7 +20,7 @@ import { mapMutations } from 'vuex'
         }                    
       })
       
-      this.socketStart()                                            
+      this.socketStart('ws://localhost:8888')                                            
     },               
 
     methods: {      

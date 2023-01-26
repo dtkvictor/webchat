@@ -1,7 +1,7 @@
 export default {
-  socketStart(state) {
+  socketStart(state, url) {
 
-    state.socket = new WebSocket('ws://localhost:8888')
+    state.socket = new WebSocket(url)
     
     if(state.onmessage) {
       state.socket.onmessage = state.onmessage

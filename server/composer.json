@@ -8,10 +8,7 @@
     "autoload": {
         "psr-4": {
             "Dtk\\Webchat\\": "src/"
-        },
-        "files": [
-            "src/Config.php"
-        ]
+        }        
     },
     "authors": [
         {

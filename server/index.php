@@ -14,4 +14,5 @@ $websocket = IoServer::factory(
     ),8888
 );
 
+echo "Websocket start running at http://localhost:8888\n";
 $websocket->run();
