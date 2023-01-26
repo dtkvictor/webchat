@@ -51,7 +51,7 @@
     <pre>php websocket/index.php</pre>    
     Existem diversas alternativas para iniciar o webchat, uma delas seria utilizando o servidor embutido do php:
     <pre>php -S localhost:8080 -t webchat/dist/</pre>
-    Outra alternativa seria utilizar o <a href="">express</a> para subir a aplicação, um pequeno exemplo disso pode ser encontrado em "/webchat/server.js": 
+    Outra alternativa seria utilizar o <a href="https://expressjs.com">express</a> para subir a aplicação, um pequeno exemplo disso pode ser encontrado em "/webchat/server.js": 
     <pre>node webchat/server.js</pre>
 </p>
 
@@ -235,7 +235,7 @@ A maioria dos erros irão ocorrer pela estrutura inválida da carga útil, as me
     </li>
 </ul>    
 
-<h2 href="#image">Imagens</h2>
+<h2 id="image">Imagens</h2>
 <img src="image/register.png" alt="register"><br>
 <img src="image/chat.png" alt="chat"><br>
 <img src="image/settings.png" alt="settings"><br>
