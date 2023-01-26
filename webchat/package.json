@@ -9,15 +9,12 @@
   },
   "dependencies": {
     "bootstrap": "^5.2.3",
-    "chalk": "^5.2.0",
     "core-js": "^3.6.5",
     "express": "^4.18.2",
     "izitoast": "^1.4.0",
     "listening-on": "^2.0.9",
     "material-icons": "^1.12.0",
-    "materialize-css": "^1.0.0-rc.2",
     "moment": "^2.29.4",
-    "running-at": "^0.3.22",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"

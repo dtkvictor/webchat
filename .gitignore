@@ -1,2 +1,2 @@
-/server/vendor
-/client/node_modules
+/websocket/vendor
+/webchat/node_modules

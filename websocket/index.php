@@ -6,13 +6,14 @@ use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
 use Dtk\Webchat\Lib\Chat;
 
+$port = 8888;
 $websocket = IoServer::factory(
     new HttpServer(
         new WsServer(
             new Chat()
         )
-    ),8888
+    ), $port
 );
 
-echo "Websocket start running at http://localhost:8888\n";
+echo "Websocket start \n- listening on: http://localhost:$port\n";
 $websocket->run();

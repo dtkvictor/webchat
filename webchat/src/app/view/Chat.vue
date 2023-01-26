@@ -12,7 +12,7 @@
                 <div class="chat-container" v-if="currentChat">                                            
                     <chat-header>
                         <template v-slot:showListUsers>                                                
-                            <button class="btn material-icons btn-outline-dark friendsMenu" @click="resetCurrentChat">                                
+                            <button class="border-0 btn material-icons btn-outline-dark friendsMenu" @click="resetCurrentChat">                                
                                 groups                                                                    
                             </button>                                                    
                         </template>
