@@ -1,5 +1,5 @@
 export default class {
-
+    
     removeHtmlTags(str) 
     {        
         if(!str) return false;

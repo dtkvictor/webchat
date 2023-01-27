@@ -1,16 +1,8 @@
 export default {
-  socketStart(state, url) {
-
-    state.socket = new WebSocket(url)
-    
-    if(state.onmessage) {
-      state.socket.onmessage = state.onmessage
-    }
-
-    if(state.onerror) {
-      state.socket.onerror = state.onerror
-    }
-
+  socketStart(state) {
+    state.socket = new WebSocket(state.websocketUrl)
+    if(state.onmessage) state.socket.onmessage = state.onmessage
+    if(state.onerror) state.socket.onerror = state.onerror
   },
 
   socketSetEvent(state, {onmessage = null, onerror = null}){
@@ -52,7 +44,7 @@ export default {
         const payload = state.helpers.defaultDataNotificationToats()
           payload.image = state.users[userId].image
           payload.title = state.users[userId].name
-          payload.message = state.helpers.notificationByFormat(message.format, message.value)       
+          payload.message = state.helpers.notificationByFormat(message.format, message.value)              
 
         state.users[userId].unreadMessage ++
         if(state.showNotification) state.iziToast.show(payload)                                 

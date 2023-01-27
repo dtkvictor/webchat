@@ -4,7 +4,7 @@ import iziToast from 'izitoast'
 moment.locale('pt-br')
 
 export default {
-    
+    websocketUrl: 'ws://localhost:8888',
     socket: null,
     onmessage: null,
     onerror: null,

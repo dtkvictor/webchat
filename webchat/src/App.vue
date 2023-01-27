@@ -5,8 +5,7 @@
 
 import { mapMutations } from 'vuex'
   export default {            
-    name: 'App',          
-
+    name: 'App',              
     created() {
 
       this.socketSetEvent({
@@ -20,7 +19,7 @@ import { mapMutations } from 'vuex'
         }                    
       })
       
-      this.socketStart('ws://localhost:8888')                                            
+      this.socketStart()                                            
     },               
 
     methods: {      

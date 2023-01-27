@@ -60,8 +60,7 @@ export default {
         },
 
         sendText() {                
-            if(!this.$refs.message.value) return false;                
-            console.log(this.$refs.message.value)
+            if(!this.$refs.message.value) return false;                            
             this.sendMessage({value: this.$refs.message.value}) 
             this.$refs.message.value = ''
         },                       

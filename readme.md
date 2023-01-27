@@ -53,6 +53,7 @@
     <pre>php -S localhost:8080 -t webchat/dist/</pre>
     Outra alternativa seria utilizar o <a href="https://expressjs.com">express</a> para subir a aplicação, um pequeno exemplo disso pode ser encontrado em "/webchat/server.js": 
     <pre>node webchat/server.js</pre>
+    <pre>OBS: Caso queira alterar a url de conexão com websocket, basta entrar em: "webchat/src/store/default/state.js"</pre>
 </p>
 
 <h2 id="communication">Comunicação</h2>
