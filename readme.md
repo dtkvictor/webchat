@@ -53,7 +53,7 @@
     <pre>php -S localhost:8080 -t webchat/dist/</pre>
     Outra alternativa seria utilizar o <a href="https://expressjs.com">express</a> para subir a aplicação, um pequeno exemplo disso pode ser encontrado em "/webchat/server.js": 
     <pre>node webchat/server.js</pre>
-    <pre>OBS: Caso queira alterar a url de conexão com websocket, basta entrar em: "webchat/src/store/default/state.js"</pre>
+    <pre>OBS: Caso queira alterar a url de conexão com websocket, basta entrar em: "webchat/src/store/default/state.js". Após realizar as alterações abra o diretório "webchat" em seu terminal e execute o comando npm run build.</pre>
 </p>
 
 <h2 id="communication">Comunicação</h2>
@@ -211,7 +211,7 @@ error: {
 </pre>
 
 <h3 id="error">Erros</h3>
-A maioria dos erros irão ocorrer pela estrutura inválida da carga útil, as mensagens que você vai recebor por erro do client são:
+A maioria dos erros irão ocorrer pela estrutura inválida da carga útil, as mensagens que você vai receber por erro do client são:
 <ul>
     <li>
         Failed to register user: Não for possível registrar um usuário    
